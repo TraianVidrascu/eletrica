@@ -1,0 +1,11 @@
+Lorincz Arnold,Mera 278,1
+Someone,Someplace1 100,3
+Testone,Placeone 123,4
+a,adr1,6
+b,b1,7
+eu,eu,1
+eu,eu,eu
+eu,eu,2
+eu,eu,5
+eu,eu,10
+test,test,test
