@@ -70,7 +70,7 @@ public class AppTest extends TestCase {
             ctrl.addClient(client.getName(), client.getAddress(), client.getIdClient());
             fail();
         } catch (ElectricaException e) {
-
+            Assert.assertEquals(e.getMessage(),ErrorMessages.DUPLICATE_CLIENT);
         }
     }
 
