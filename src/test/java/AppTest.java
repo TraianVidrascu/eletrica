@@ -32,6 +32,7 @@ public class AppTest extends TestCase {
         unsavedClient = new Client("testunsaved", "testunsaved", "testunsaved");
         indexClinet = new Client("idxtest", "idxtest", "idxtest");
         invalidClient = new Client("test123", "test123", "test");
+        invalidClient = new Client("test123", "test123", "test");
         validIssue = new Issue(indexClinet, 2018, 9, 100f, 0f);
         issue1 = new Issue(issueListClinet, 2018, 9, 100f, 0f);
         issue2 = new Issue(issueListClinet, 2018, 10, 100f, 0f);
@@ -74,11 +75,70 @@ public class AppTest extends TestCase {
     }
 
     @Test
-    public void testAddInvalidClient() {
+    public void testAddInvalidNameClient() {
         try {
             ctrl.addClient(invalidClient.getName(), invalidClient.getAddress(), invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.INVALID_CHARACTER+"1");
+        }
+    }
+    @Test
+    public void testAddNullNameClient() {
+        try {
+            ctrl.addClient(null, invalidClient.getAddress(), invalidClient.getIdClient());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+        }
+    }
+
+    @Test
+    public void testAddWhitespaceNameClient() {
+        try {
+            ctrl.addClient("    ", invalidClient.getAddress(), invalidClient.getIdClient());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+        }
+    }
+
+    @Test
+    public void testAddNullAdressClient() {
+        try {
+            ctrl.addClient("test", null, invalidClient.getIdClient());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+        }
+    }
+    @Test
+    public void testAddWhitespaceAdressClient() {
+        try {
+            ctrl.addClient("test", "     ", invalidClient.getIdClient());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+        }
+    }
+
+    @Test
+    public void testAddNullId() {
+        try {
+            ctrl.addClient(client.getName(), client.getAddress(), null);
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+        }
+    }
+
+    @Test
+    public void testAddWhitespaceId() {
+        try {
+            ctrl.addClient(client.getName(), client.getAddress(), "   ");
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 

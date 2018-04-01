@@ -1,10 +1,7 @@
 package ui;
 
-import java.io.IOException;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import com.sun.deploy.util.StringUtils;
 import exceptions.ElectricaException;
 import model.*;
 import controller.ClientController;;
