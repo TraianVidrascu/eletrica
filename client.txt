@@ -9,3 +9,6 @@ eu,eu,2
 eu,eu,5
 eu,eu,10
 test,test,test
+idxtest,idxtest,idxtest
+testissue,testissue,testissue
+noIssuesClient,noIssuesClient,noIssuesClient

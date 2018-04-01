@@ -143,7 +143,11 @@ public class ElectricaUI {
         String id = in.nextLine();
 
 
-        System.out.println(ctrl.listIssue(name, address, id));
+        try {
+            System.out.println(ctrl.listIssue(name, address, id));
+        } catch (ElectricaException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
 

@@ -53,6 +53,7 @@ public class ClientController {
                     //check if client exist
                     if (dataManager.isClientPresent(c)) {
                         Issue issue = new Issue(c, year, month, toPay, 0);
+                        validateIssue(issue);
                         //uniqueness
                         if (dataManager.isIssuePresent(issue)) {
                             throw new IssueException(MONTHLY_INDEX_ALREADY_EXISTS);
@@ -74,8 +75,26 @@ public class ClientController {
         }
     }
 
-    public String listIssue(String name, String address, String id) {
-        List<Issue> issues = dataManager.getClientIssues(new Client(name,address,id));
+    private void validateIssue(Issue issue) throws InvalidParameterExecption {
+        if (issue.getMonth() < 1 || issue.getMonth() > 12) {
+            throw new InvalidParameterExecption(ErrorMessages.INVALID_MONTH);
+        }
+        if (issue.getYear() < 1945 || issue.getYear() > 2050) {
+            throw new InvalidParameterExecption(ErrorMessages.INVALID_YEAR);
+        }
+        if (issue.getToPay() < 0) {
+            throw new InvalidParameterExecption(ErrorMessages.INVALID_MONEY_SUM);
+        }
+    }
+
+    public String listIssue(String name, String address, String id) throws ElectricaException {
+
+        Client client = new Client(name, address, id);
+        if (!dataManager.isClientPresent(client)) {
+            throw new IssueException(CLIENT_DOES_NOT_EXIST);
+
+        }
+        List<Issue> issues = dataManager.getClientIssues(client);
         for (Issue issue : issues) {
             name += String.format("year: %d, Month: %d, paid: %2.0f, Penalty: %2.0f\n", issue.getYear(), issue.getMonth(), issue.getPaid(), issue.getToPay());
         }
