@@ -1,10 +1,6 @@
 package repository;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +10,8 @@ import exceptions.IOElectricaException;
 import model.*;
 
 public class DataManager {
-    private final static String FILE_CLIENT = "client.txt";
-    private final static String FILE_ISSUE = "issue.txt";
+    private  String fileClient = "client.txt";
+    private String issueFile = "issue.txt";
     public static final String LINE_SEPARATOR = "line.separator";
     private List<Client> clients;
     private List<Issue> issues;
@@ -27,10 +23,39 @@ public class DataManager {
         loadClient();
         loadIssues();
     }
+    public DataManager(String fileClient,String issueFile) throws IOElectricaException {
+        this.fileClient = fileClient;
+        this.issueFile = issueFile;
+        clients = new ArrayList<>();
+        issues = new ArrayList<>();
+
+        loadClient();
+        loadIssues();
+    }
+
+    public void resetClientFile(){
+        clearFile(fileClient);
+
+    }
+
+    public void clearFile(String file) {
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(file);
+            writer.print("");
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetIssueFile(){
+        clearFile(issueFile);
+    }
 
     private void loadClient() throws IOElectricaException {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(FILE_CLIENT));
+            BufferedReader br = new BufferedReader(new FileReader(fileClient));
             String line;
             while ((line = br.readLine()) != null) {
                 String[] words = line.replace("\n", "").replace("\r", "").split(",");
@@ -47,7 +72,7 @@ public class DataManager {
 
     private void loadIssues() throws IOElectricaException {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(FILE_ISSUE));
+            BufferedReader br = new BufferedReader(new FileReader(issueFile));
             String line;
             Boolean b = true;
             String name = "";
@@ -106,8 +131,8 @@ public class DataManager {
 
     public void saveChanges() throws IOElectricaException {
         try {
-            File fClient = new File(FILE_CLIENT);
-            File fIssue = new File(FILE_ISSUE);
+            File fClient = new File(fileClient);
+            File fIssue = new File(issueFile);
             FileWriter pwClient = new FileWriter(fClient.getAbsolutePath());
             FileWriter pwIssue = new FileWriter(fIssue.getAbsolutePath());
             String s;

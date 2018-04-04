@@ -45,60 +45,56 @@ public class ClientController {
     }
 
     public void addClientIndex(Client c, int year, int month, float toPay) throws ElectricaException {
-        if (year > 0) {
-            if (month > 0) {
-                if (toPay >= 0) {
-                    //validate client attributes
-                    validateClient(c.getName(), c.getAddress(), c.getIdClient());
-                    //check if client exist
-                    if (dataManager.isClientPresent(c)) {
-                        Issue issue = new Issue(c, year, month, toPay, 0);
-                        validateIssue(issue);
-                        //uniqueness
-                        if (dataManager.isIssuePresent(issue)) {
-                            throw new IssueException(MONTHLY_INDEX_ALREADY_EXISTS);
-                        }
-                        dataManager.addIssue(issue);
-                        dataManager.saveChanges();
-                    } else {
-                        throw new IssueException(CLIENT_DOES_NOT_EXIST);
-                    }
 
-                } else {
-                    throw new IssueException(INVALID_MONEY_SUM);
-                }
-            } else {
-                throw new IssueException(INVALID_MONTH);
+
+        //validate client attributes
+        validateClient(c.getName(), c.getAddress(), c.getIdClient());
+        //check if client exist
+        if (dataManager.isClientPresent(c)) {
+            Issue issue = new Issue(c, year, month, toPay, 0);
+            validateIssue(issue);
+            //uniqueness
+            if (dataManager.isIssuePresent(issue)) {
+                throw new IssueException(MONTHLY_INDEX_ALREADY_EXISTS);
             }
-        } else {
-            throw new IssueException(INVALID_YEAR);
+            dataManager.addIssue(issue);
+            dataManager.saveChanges();
+
+
         }
     }
 
-    private void validateIssue(Issue issue) throws InvalidParameterExecption {
-        if (issue.getMonth() < 1 || issue.getMonth() > 12) {
-            throw new InvalidParameterExecption(ErrorMessages.INVALID_MONTH);
+        private void validateIssue (Issue issue) throws InvalidParameterExecption {
+            if (issue.getMonth() < 1 || issue.getMonth() > 12) {
+                throw new InvalidParameterExecption(ErrorMessages.INVALID_MONTH);
+            }
+            if (issue.getYear() < 1945 || issue.getYear() > 2050) {
+                throw new InvalidParameterExecption(ErrorMessages.INVALID_YEAR);
+            }
+            if (issue.getToPay() < 0) {
+                throw new InvalidParameterExecption(ErrorMessages.INVALID_MONEY_SUM);
+            }
         }
-        if (issue.getYear() < 1945 || issue.getYear() > 2050) {
-            throw new InvalidParameterExecption(ErrorMessages.INVALID_YEAR);
+
+        public String listIssue (String name, String address, String id) throws ElectricaException {
+
+            Client client = new Client(name, address, id);
+            if (!dataManager.isClientPresent(client)) {
+                throw new IssueException(CLIENT_DOES_NOT_EXIST);
+
+            }
+            List<Issue> issues = dataManager.getClientIssues(client);
+            for (Issue issue : issues) {
+                name += String.format("year: %d, Month: %d, paid: %2.0f, Penalty: %2.0f\n", issue.getYear(), issue.getMonth(), issue.getPaid(), issue.getToPay());
+            }
+            return name;
         }
-        if (issue.getToPay() < 0) {
-            throw new InvalidParameterExecption(ErrorMessages.INVALID_MONEY_SUM);
-        }
+
+    public DataManager getDataManager() {
+        return dataManager;
     }
 
-    public String listIssue(String name, String address, String id) throws ElectricaException {
-
-        Client client = new Client(name, address, id);
-        if (!dataManager.isClientPresent(client)) {
-            throw new IssueException(CLIENT_DOES_NOT_EXIST);
-
-        }
-        List<Issue> issues = dataManager.getClientIssues(client);
-        for (Issue issue : issues) {
-            name += String.format("year: %d, Month: %d, paid: %2.0f, Penalty: %2.0f\n", issue.getYear(), issue.getMonth(), issue.getPaid(), issue.getToPay());
-        }
-        return name;
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
-
 }
