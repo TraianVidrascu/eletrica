@@ -1,3 +1,5 @@
+package tests;
+
 import controller.ClientController;
 import exceptions.ElectricaException;
 import exceptions.ErrorMessages;
@@ -6,11 +8,13 @@ import model.Client;
 import model.Issue;
 import org.junit.Assert;
 import org.junit.Test;
+import repository.DataManager;
 
 import java.util.OptionalInt;
 
 public class AppTest extends TestCase {
     private ClientController ctrl;
+    private DataManager dm;
     private Client client;
     private Client unsavedClient;
     private Client invalidClient;
@@ -41,6 +45,10 @@ public class AppTest extends TestCase {
         invalidYearIssue = new Issue(indexClinet, 1850, 9, 100f, 0f);
         invalidToPayIssue = new Issue(indexClinet, 2018, 9, -2f, 0f);
         ctrl = new ClientController();
+        dm = new DataManager("testclient.txt","testissue.txt");
+        ctrl.setDataManager(dm);
+        dm.resetIssueFile();
+        dm.resetClientFile();
         try {
             ctrl.addClient(indexClinet.getName(), indexClinet.getAddress(), indexClinet.getIdClient());
         } catch (ElectricaException e) {
@@ -70,7 +78,7 @@ public class AppTest extends TestCase {
             ctrl.addClient(client.getName(), client.getAddress(), client.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage(),ErrorMessages.DUPLICATE_CLIENT);
+            Assert.assertEquals(e.getMessage(), ErrorMessages.DUPLICATE_CLIENT);
         }
     }
 
@@ -80,16 +88,17 @@ public class AppTest extends TestCase {
             ctrl.addClient(invalidClient.getName(), invalidClient.getAddress(), invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.INVALID_CHARACTER+"1");
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.INVALID_CHARACTER + "1");
         }
     }
+
     @Test
     public void testAddNullNameClient() {
         try {
             ctrl.addClient(null, invalidClient.getAddress(), invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 
@@ -99,7 +108,7 @@ public class AppTest extends TestCase {
             ctrl.addClient("    ", invalidClient.getAddress(), invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 
@@ -109,16 +118,17 @@ public class AppTest extends TestCase {
             ctrl.addClient("test", null, invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
+
     @Test
     public void testAddWhitespaceAdressClient() {
         try {
             ctrl.addClient("test", "     ", invalidClient.getIdClient());
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 
@@ -128,7 +138,7 @@ public class AppTest extends TestCase {
             ctrl.addClient(client.getName(), client.getAddress(), null);
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 
@@ -138,7 +148,7 @@ public class AppTest extends TestCase {
             ctrl.addClient(client.getName(), client.getAddress(), "   ");
             fail();
         } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage().trim(),ErrorMessages.EMPTY_ADDRESS_OR_NAME);
+            Assert.assertEquals(e.getMessage().trim(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
 
@@ -153,15 +163,6 @@ public class AppTest extends TestCase {
         }
     }
 
-    @Test
-    public void testAddIndexToNonExistingClient() {
-        try {
-            ctrl.addClientIndex(unsavedClient, validIssue.getYear(), validIssue.getMonth(), validIssue.getToPay());
-            fail();
-        } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage(), ErrorMessages.CLIENT_DOES_NOT_EXIST);
-        }
-    }
 
     @Test
     public void testAddIndexToInvalidClient() {
@@ -180,22 +181,7 @@ public class AppTest extends TestCase {
         }
     }
 
-    @Test
-    public void testInvalidMonthIndex() {
-        try {
-            ctrl.addClientIndex(invalidIssue.getClient(), invalidIssue.getYear(), invalidIssue.getMonth(), invalidIssue.getToPay());
-            fail();
-        } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage(), ErrorMessages.INVALID_MONTH);
-        }
-        invalidIssue.setMonth(-1);
-        try {
-            ctrl.addClientIndex(invalidIssue.getClient(), invalidIssue.getYear(), invalidIssue.getMonth(), invalidIssue.getToPay());
-            fail();
-        } catch (ElectricaException e) {
-            Assert.assertEquals(e.getMessage(), ErrorMessages.INVALID_MONTH);
-        }
-    }
+
 
     @Test
     public void testInvalidYearIndex() {
@@ -235,7 +221,7 @@ public class AppTest extends TestCase {
         if (result == null) {
             fail();
         }
-        assertEquals(3,result.split("\n").length);
+        assertEquals(3, result.split("\n").length);
     }
 
     @Test
@@ -257,9 +243,43 @@ public class AppTest extends TestCase {
         try {
             ctrl.listIssue(unsavedClient.getName(), unsavedClient.getAddress(), unsavedClient.getIdClient());
             fail();
-        }catch (ElectricaException e){
-            Assert.assertEquals(e.getMessage(),ErrorMessages.CLIENT_DOES_NOT_EXIST);
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage(), ErrorMessages.CLIENT_DOES_NOT_EXIST);
         }
 
+    }
+
+    @Test
+    public void testAddClientIssueWhiteBox() {
+        ctrl.getDataManager().resetClientFile();
+        ctrl.getDataManager().resetIssueFile();
+        try {
+            ctrl.addClient(client.getName(), client.getAddress(), client.getIdClient());
+        } catch (ElectricaException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ctrl.addClientIndex(client,issue1.getYear(),issue1.getMonth(),issue1.getToPay());
+        } catch (ElectricaException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testInvalidMonthIndex() {
+        try {
+            ctrl.addClientIndex(invalidIssue.getClient(), invalidIssue.getYear(), invalidIssue.getMonth(), invalidIssue.getToPay());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage(), ErrorMessages.INVALID_MONTH);
+        }
+        invalidIssue.setMonth(-1);
+        try {
+            ctrl.addClientIndex(invalidIssue.getClient(), invalidIssue.getYear(), invalidIssue.getMonth(), invalidIssue.getToPay());
+            fail();
+        } catch (ElectricaException e) {
+            Assert.assertEquals(e.getMessage(), ErrorMessages.INVALID_MONTH);
+        }
     }
 }
