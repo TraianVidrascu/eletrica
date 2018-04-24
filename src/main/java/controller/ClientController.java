@@ -19,7 +19,7 @@ public class ClientController {
     private void validateClient(String name, String address, String id) throws ElectricaException {
         if (name != null && !name.trim().isEmpty() && address != null && !address.trim().isEmpty() && id != null && !id.trim().isEmpty()) {
             for (int i = 0; i < name.length(); i++) {
-                if ((!Character.isUpperCase(name.charAt(i))) && (!Character.isLowerCase(name.charAt(i))) && (!Character.isSpaceChar(name.charAt(i)))) {
+                if (!Character.isAlphabetic(name.charAt(i)) && !Character.isSpaceChar(name.charAt(i))) {
                     throw new InvalidCharacterException(ErrorMessages.INVALID_CHARACTER + name.charAt(i));
                 }
             }

@@ -8,9 +8,16 @@ import model.Client;
 import model.Issue;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import repository.DataManager;
 
 import java.util.OptionalInt;
+
+import static org.mockito.Mockito.doReturn;
 
 public class AppTest extends TestCase {
     private ClientController ctrl;
@@ -290,4 +297,8 @@ public class AppTest extends TestCase {
             Assert.assertEquals(e.getMessage(), ErrorMessages.INVALID_MONTH);
         }
     }
+
+
+
+
 }
