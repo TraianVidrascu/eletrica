@@ -34,6 +34,7 @@ public class DataManager {
     }
 
     public void resetClientFile(){
+        clients.clear();
         clearFile(fileClient);
 
     }
@@ -49,7 +50,9 @@ public class DataManager {
         }
     }
 
-    public void resetIssueFile(){
+    public void resetIssueFile()
+    {
+        issues.clear();
         clearFile(issueFile);
     }
 

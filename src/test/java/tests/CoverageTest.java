@@ -71,6 +71,7 @@ public class CoverageTest  extends TestCase{
             Assert.assertEquals(e.getMessage(), ErrorMessages.EMPTY_ADDRESS_OR_NAME);
         }
     }
+
     @Test
     public void testAddIndexInvalidClientCharacter(){
         try {
